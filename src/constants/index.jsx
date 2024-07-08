@@ -81,5 +81,4 @@ export const frontendTechStack = [
 export const backend = [
   {text: "Firebase Authentication" },
   {text: "Firestore Database" },
-  {text: "FastAPI" },
 ];
