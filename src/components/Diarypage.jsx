@@ -2,17 +2,18 @@ import axios from "axios";
 import React, { useState } from "react";
 import { History } from "lucide-react";
 import { useFirebase } from "../Firebase/Firebase";
+import LoadingModal from "./Loading";
 const Diarypage = () => {
   const [text, setText] = useState("");
   const [response, setResponse] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { savePrediction, isLoggedIn } = useFirebase();
 
   const handleSubmit = async () => {
     setError("");
     setLoading(true);
-    if (text.length == 0) {
+    if (text.length === 0) {
       setLoading(false);
       setError("No text provided");
       return;
@@ -42,39 +43,18 @@ const Diarypage = () => {
       console.error(error);
       setError("An error occurred while fetching the prediction.");
     }
-    // try {
-    //   const res = await fetch("http://localhost:5001/predict", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ thoughts: text }),
-    //   });
-
-    //   if (!res.ok) {
-    //     throw new Error("Network response was not ok");
-    //   }
-    //   const data = await res.json();
-    //   setResponse(data.prediction_text);
-    //   setLoading(false);
-    //   if (isLoggedIn) {
-    //     savePrediction(data.prediction_text);
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   setError("An error occurred while fetching the prediction.");
-    // }
   };
 
   const handleClear = () => {
     setText("");
     setResponse("");
     setError("");
-    setLoading(true);
+    setLoading(false);
   };
   const percentage = (data) => {
     return data * 100;
   };
+  // if(loading)return
 
   return (
     <div className="flex flex-col bg-gradient-to-t  from-[#F1F8E8] to bg-[#D8EFD3] font-mono items-center pb-4">
@@ -99,12 +79,12 @@ const Diarypage = () => {
         </button>
       </div>
       {error && <div className="text-red-800">{error}</div>}
-      {response &&
-        (loading ? (
-          <div>
-            <p>Loading...</p>
-          </div>
-        ) : (
+      {loading === true ? (
+        <div>
+          <LoadingModal />
+        </div>
+      ) : (
+        response && (
           <div className="mt-4">
             <table className=" border-2 border-gray-600 mt-2">
               <thead>
@@ -147,18 +127,11 @@ const Diarypage = () => {
                     {`${percentage(response.neu)}%`}
                   </th>
                 </tr>
-                {/* <tr>
-                  <th className="border border-red-800 uppercase px-4 py-2">
-                    Compound
-                  </th>
-                  <th className="border border-red-800 uppercase px-4 py-2">
-                    {response.compound}
-                  </th>
-                </tr> */}
               </tbody>
             </table>
           </div>
-        ))}
+        )
+      )}
     </div>
   );
 };
