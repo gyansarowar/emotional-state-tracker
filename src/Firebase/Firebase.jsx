@@ -13,6 +13,7 @@ import {
   where,
   addDoc,
   query,
+  orderBy
 } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { createContext } from "react";
@@ -117,8 +118,9 @@ export const FirebaseProvider = ({ children }) => {
 
   const fetchPrediction = async () => {
     const collectionRef = collection(database, "users", userDocRef, "history");
-    const res = await getDocs(collectionRef);
-    return res;
+    const q = query(collectionRef, orderBy("Time", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot;
   };
 
   return (
